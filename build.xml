@@ -1,29 +1,92 @@
 <!-- AdvancedTools, 2007, all rights reserved -->
-<project name="CppTools plugin deploy" default="copy_files">
-  <property name="idea.sandbox.home.path" value="${IDEA_SANDBOX_HOME_PATH}"/>
-  <property name="project.path" value="${basedir}" />
+<project name="CppTools plugin deploy" default="deploy_debug">
+    <property name="idea.sandbox.home.path" value="${IDEA_SANDBOX_HOME_PATH}" />
+    <property name="idea.sandbox.home.pluginpath" value="${idea.sandbox.home.path}/plugins/CppTools" />
 
-  <target name="copy_files">
-    <mkdir dir="${idea.sandbox.home.path}/plugins/CppTools/lib" />
+    <property name="project.path" value="${basedir}" />
+    <property name="libs.path" value="${project.path}/.." />
+    <property name="classes.path" value="${project.path}/classes" />
 
-    <copy todir="${idea.sandbox.home.path}/plugins/CppTools/lib" >
-       <fileset dir="${project.path}/.." includes="lib.tcl,profile.tcl,defs.h,cfserver.exe,cfserver.mac,cfserver.linux,cfserver.*.syms"/>
-    </copy>
+    <property name="target.base.path" value="${project.path}/target" />
+    <!-- this property shouldn't need to be set here - this stub is for posterity -->
+    <!-- <property name="target.plugin.path" value="${target.base.path}" /> -->
 
-    <copy todir="${idea.sandbox.home.path}/plugins/CppTools" >
-       <fileset dir="${project.path}/../DOC" includes="readme.*"/>
-    </copy>
+    <property name="target.debug.base.path" value="${target.base.path}/debug" />
+    <property name="target.debug.plugin.path" value="${target.base.path}/CppTools" />
 
-    <mkdir dir="${idea.sandbox.home.path}/plugins/CppTools/META-INF" />
+    <property name="target.release.base.path" value="${target.base.path}/release" />
+    <property name="target.release.plugin.path" value="${target.base.path}/CppTools" />
 
-    <copy todir="${idea.sandbox.home.path}/plugins/CppTools/META-INF" >
-       <fileset dir="${project.path}/META-INF" includes="*.xml"/>
-    </copy>
-  </target>
+    <target name="clean">
+        <delete dir="${classes.path}" quiet="true" />
+    </target>
 
-  <target name="release" depends="copy_files">
-      <delete file="${idea.sandbox.home.path}/plugins/CppTools/lib/CppTools.zip" quiet="true"/>
-      <jar jarfile="${idea.sandbox.home.path}/plugins/CppTools/lib/CppTools.zip" basedir="${project.path}/classes" excludes="tests/**"/>
-    <zip basedir="${idea.sandbox.home.path}/plugins" includes="CppTools/**/*.*,CppTools/**/*" excludes="CppTools/classes/**,CppTools/logs/**" destfile="CppTools.zip"/>
-  </target>
+    <target name="clean_target">
+        <delete dir="${target.base.path}" quiet="true" />
+    </target>
+
+    <target name="clean_debug">
+        <delete dir="${target.debug.base.path}" quiet="true" />
+    </target>
+
+    <target name="clean_release">
+        <delete dir="${target.release.base.path}" quiet="true" />
+    </target>
+
+    <target name="clean_sandbox">
+        <delete dir="${idea.sandbox.home.pluginpath}" quiet="true" />
+    </target>
+
+    <target name="clean_all">
+        <antcall target="clean" />
+        <antcall target="clean_target" />
+        <antcall target="clean_sandbox" />
+    </target>
+
+    <target name="build_common">
+        <mkdir dir="${target.base.path}" />
+        <mkdir dir="${target.plugin.path}" />
+        <mkdir dir="${target.plugin.path}/lib" />
+        <mkdir dir="${target.plugin.path}/META-INF" />
+        <copy todir="${target.plugin.path}/lib">
+            <fileset dir="${libs.path}" includes="lib.tcl,profile.tcl,defs.h,cfserver.exe,cfserver.mac,cfserver.linux,cfserver.*.syms" />
+        </copy>
+        <copy todir="${target.plugin.path}/META-INF">
+            <fileset dir="${project.path}/META-INF" includes="*.xml" />
+        </copy>
+    </target>
+
+    <target name="build_debug">
+        <antcall target="build_common">
+            <param name="target.plugin.path" value="${target.debug.plugin.path}" />
+        </antcall>
+
+        <!-- IDEA does this automatically. keeping this here just in case
+        <mkdir dir="${target.plugin.path}/classes" />
+        <copy todir="${target.plugin.path}/classes">
+            <fileset dir="${project.path}" />
+        </copy>
+         -->
+    </target>
+
+    <target name="build_release">
+        <antcall target="clean_release" />
+        <antcall target="build_common">
+            <param name="target.plugin.path" value="${target.release.plugin.path}" />
+        </antcall>
+
+        <jar jarfile="${target.release.plugin.path}/lib/CppTools.jar" basedir="${classes.path}" excludes="tests/**" />
+    </target>
+
+    <target name="deploy_debug" depends="build_debug">
+        <mkdir dir="${idea.sandbox.home.pluginpath}" />
+        <copy todir="${idea.sandbox.home.pluginpath}">
+            <fileset dir="${target.debug.plugin.path}" />
+        </copy>
+    </target>
+
+    <target name="package_release" depends="build_release">
+        <delete file="${target.base.path}/CppTools.zip" quiet="true" />
+        <zip basedir="${target.release.base.path}" destfile="${target.base.path}/CppTools.zip" />
+    </target>
 </project>
