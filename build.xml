@@ -12,10 +12,10 @@
     <!-- <property name="target.plugin.path" value="${target.base.path}" /> -->
 
     <property name="target.debug.base.path" value="${target.base.path}/debug" />
-    <property name="target.debug.plugin.path" value="${target.base.path}/CppTools" />
+    <property name="target.debug.plugin.path" value="${target.debug.base.path}/CppTools" />
 
     <property name="target.release.base.path" value="${target.base.path}/release" />
-    <property name="target.release.plugin.path" value="${target.base.path}/CppTools" />
+    <property name="target.release.plugin.path" value="${target.release.base.path}/CppTools" />
 
     <target name="clean">
         <delete dir="${classes.path}" quiet="true" />
