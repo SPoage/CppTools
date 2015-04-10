@@ -7,7 +7,7 @@
     <mkdir dir="${idea.sandbox.home.path}/plugins/CppTools/lib" />
 
     <copy todir="${idea.sandbox.home.path}/plugins/CppTools/lib" >
-       <fileset dir="${project.path}/.." includes="lib.tcl,profile.tcl,defs.h,cfserver.exe,cfserver.mac,cfserver.linux,cfserver.*.syms"/>
+       <fileset dir="${project.path}/lib" includes="lib.tcl,profile.tcl,defs.h,cfserver.exe,cfserver.mac,cfserver.linux,cfserver.*.syms"/>
     </copy>
 
     <copy todir="${idea.sandbox.home.path}/plugins/CppTools" >
