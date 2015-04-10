@@ -4,7 +4,7 @@
     <property name="idea.sandbox.home.pluginpath" value="${idea.sandbox.home.path}/plugins/CppTools" />
 
     <property name="project.path" value="${basedir}" />
-    <property name="libs.path" value="${project.path}/.." />
+    <property name="libs.path" value="${project.path}/lib" />
     <property name="classes.path" value="${project.path}/classes" />
 
     <property name="target.base.path" value="${project.path}/target" />
